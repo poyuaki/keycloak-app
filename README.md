@@ -6,3 +6,18 @@
 
 # 参考元
 [oauth2-with-keycloak](https://github.com/s-moteki/oauth2-with-keycloak)
+
+# vueに関して
+
+## 起動
+```
+docker-compose up app
+```
+
+変更した場合には`docker-compose build app`をする
+
+## 起動(dockerを用いない)
+```
+npm run serve
+```
+※appフォルダ内で実行
