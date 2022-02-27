@@ -1,0 +1,57 @@
+version: '3.6'
+
+services:
+  app:
+    build:
+      context: app
+    ports:
+      - "8000:8080"
+    command: npm run serve
+
+  keycloak:
+    build:
+      context: keycloak
+    environment:
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+      KEYCLOAK_IMPORT: /tmp/export/test_service.json
+      DB_VENDOR: MYSQL
+      DB_ADDR: mysql
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: password
+    ports:
+      - "18080:8080"
+    volumes:
+      - ./keycloak/export/test_service.json:/tmp/export/test_service.json
+    depends_on:
+      - mysql
+  
+  mysql:
+    image: mysql:5.7
+    volumes:
+      - key_cloak_mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: keycloak
+      MYSQL_USER: keycloak
+      MYSQL_PASSWORD: password
+  
+  node-gateway:
+    build:
+      context: gateway
+    depends_on:
+      - keycloak
+      - api
+    ports:
+      - "8080:8000"
+
+  api:
+    build:
+      context: json-server
+    volumes:
+      - ./json-server:/data
+
+volumes:
+  key_cloak_mysql_data:
+    driver: local
